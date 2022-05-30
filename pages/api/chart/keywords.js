@@ -4,6 +4,19 @@ import axios from 'axios';
 
 
 export default async function handler(req, res) {
+
+  //키워드 입력되지 않았을 때의 오류 
+  if(req.query.words == null){
+      
+    return res.status(200).json({
+      isSuccess : false,
+      code : 2003,
+      message : "키워드가 입력되지 않았습니다!",
+  });
+  process.exit(1);
+  
+  }
+
   let keywords = req.query.words.replace(/ /g, '').split(',');
   const startDate = req.query.startDate.replace('/', '-').replace('/', '-');
   const endDate = req.query.endDate.replace('/', '-').replace('/', '-');
@@ -11,6 +24,9 @@ export default async function handler(req, res) {
 
   const startDateTest = req.query.startDate.split('/');
   const endDateTest = req.query.endDate.split('/');
+
+  
+  
   
   //키워드 5개 이상 입력했을 때 오류
 
