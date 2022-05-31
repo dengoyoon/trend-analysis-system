@@ -7,34 +7,35 @@ dbInit();
 export default async function handler(req, res) {
     const apiMethod = req.method;
     const reqBody = req.body;
-    const categoryModels = await findCategory(reqBody.categoryName);
-    
-    
+    const category = req.body.categoryName
+    const categoryModels = await findCategory(category);
+    //카테 고리 중복 방지
+    if(categoryModels.length != 0){
+        res.status(200).json({ 
+           isSuccess : false,
+           code: 3001,
+           message: "이미 등록된 카테고리 입니다."
+       })
+    }
 
     
-    
-
-    if (apiMethod == "POST") {
+    else if (apiMethod == "POST" && categoryModels.length == 0 ) {
         const isSuccess = await saveKeywords(reqBody);
         
 
-        if(isSuccess) {
-          if(categoryModels.length == 0){
+
+
+        if(isSuccess && categoryModels.length == 0) {
+
             res.status(200).json({ 
-                isSuccess : true,
-                code: 1000,
-                message: "카테고리 등록에 성공하셨습니다."
+                    isSuccess : true,
+                    code: 1000,
+                    message: "카테고리 등록에 성공하셨습니다."
             })
-          }
-          else{
-            res.status(200).json({ 
-                isSuccess : false,
-                code: 3001,
-                message: "이미 등록된 카테고리 입니다."
-            })
-           
-          }
-        } else {
+
+        }
+        else {
+
             res.status(200).json({ 
                 isSuccess : false,
                 code: 4000,
@@ -87,7 +88,9 @@ const saveKeywords = async(reqBody) => {
     return isSuccess;
 }
 
-const findCategory = async(categoryName) => {
-    const data = await keywordModel.find({categoryName : categoryName});
+
+const findCategory = async(category) => {
+    const data = await keywordModel.find({categoryName : category});
+
     return data;
 }
